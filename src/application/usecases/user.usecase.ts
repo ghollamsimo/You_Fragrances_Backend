@@ -1,13 +1,19 @@
 import {Inject, Injectable} from "@nestjs/common";
 import {UserInterface} from "../../core/interfaces/user.interface";
-import {User} from "../../core/entities/user.entity";
+import {UserEntity} from "../../core/entities/user.entity";
+import { RegisterDto } from "src/core/dto/register.dto";
+import { LoginDto } from "src/core/dto/login.dto";
 
 @Injectable()
 export class UserUseCase{
     constructor(@Inject('UserInterface') private readonly userRepository: UserInterface) {}
 
-    async execute(name: string, email: string, password: string, gender: string, phone: number): Promise<User> {
-        const user = new User(name, email, password, gender, phone);
-        return await this.userRepository.store(user);
+    async execute(registerDto: RegisterDto
+    ): Promise<UserEntity> {
+        return await this.userRepository.store(registerDto);
+    }
+
+    async login(loginDto: LoginDto): Promise<{token: string}>{
+        return this.userRepository.login(loginDto);
     }
 }
