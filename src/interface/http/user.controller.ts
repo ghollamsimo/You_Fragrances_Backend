@@ -1,9 +1,9 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { UserUseCase } from "../../application/usecases/user.usecase";
 import { UserEntity } from "../../core/entities/user.entity";
 import { RegisterDto } from "src/core/dto/register.dto";
 import { LoginDto } from "src/core/dto/login.dto";
-import { emit } from "process";
+
 
 @Controller('users')
 export class UserController {
@@ -22,4 +22,19 @@ export class UserController {
       return this.userUseCase.login(loginDto);
     }
   
+    @Get('/index')
+    async index(){
+      const users = this.userUseCase.index()
+      return users
+    } 
+
+    @Delete('/delete/:id')
+    async delete(@Param('id') id: string){
+      return await this.userUseCase.delete(id);
+    }
+
+    @Put('/update/:id')
+    async update(@Param('id') id: string, @Body() body: RegisterDto){
+        return await this.userUseCase.update(id, body)
+    }
 }
