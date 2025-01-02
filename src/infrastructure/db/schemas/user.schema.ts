@@ -24,6 +24,10 @@ export class User extends Document {
     enum: UserRole, default: UserRole.CLIENT,
   })
   role: string;
+
+  @Prop({ type: Date, default: Date.now })
+  created_at: Date;
+
 }
 
 export const UserModelSchema = SchemaFactory.createForClass(User);

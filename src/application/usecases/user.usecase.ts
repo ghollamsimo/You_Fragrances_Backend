@@ -15,5 +15,17 @@ export class UserUseCase{
 
     async login(loginDto: LoginDto): Promise<{token: string}>{
         return this.userRepository.login(loginDto);
+    }   
+
+    delete(id: string): Promise<{message: string}>{
+        return this.userRepository.delete(id);
+    }
+
+    update(id: string, registerDto: RegisterDto): Promise<{message: string}>{
+        return this.userRepository.update(id, registerDto);
+    }
+
+    index(): Promise<UserEntity[]>{
+        return this.userRepository.index();
     }
 }

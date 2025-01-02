@@ -14,13 +14,23 @@ export class UserRepositoryImpl implements UserInterface {
     constructor(@InjectModel(UserDocument.name) private userModel: Model<UserDocument> ,     private readonly jwtService: JwtService,
 ) {}
 
+async verifyToken(token: string) {
+    try {
+        
+      const decoded = this.jwtService.verify(token); 
+      
+      const user = await this.userModel.findOne({email:decoded.email}); 
+    
+
+      if (!user) throw new UnauthorizedException('User not found');
+      
+      return { email: user.email };
+    } catch (error) {
+      throw new UnauthorizedException('Token validation failed');
+    }
+  }
     async index(): Promise<UserEntity[]> {
-        const users = await this.userModel.find().exec(); 
-        if (!users) return []; 
-            return users.map(
-          (user) =>   
-            new UserEntity(user.name, user.email, user.role, user.password, user.gender),
-        );
+        return await this.userModel.find({role: 'client'}).select('_id name email role created_at') 
       }
     async store(user: RegisterDto): Promise<UserEntity> {
         const saltRounds = 10;
@@ -58,7 +68,11 @@ export class UserRepositoryImpl implements UserInterface {
         return { token };
     }
 
-    update(id: string, userDto: RegisterDto): Promise<{ message: string }> {
-        return Promise.resolve({ message: '' });
+    async update(id: string, userDto: RegisterDto): Promise<{ message: string }> {
+        const updateUser = await this.userModel.findByIdAndUpdate(id, userDto, {new: true});
+        if(!updateUser){
+            throw new Error('there is no user with this id')
+        }
+        return {message: 'user updated successfully'}
     }
 }
