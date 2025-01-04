@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { UserUseCase } from "../../application/usecases/user.usecase";
 import { UserEntity } from "../../core/entities/user.entity";
-import { RegisterDto } from "src/core/dto/register.dto";
-import { LoginDto } from "src/core/dto/login.dto";
+import { RegisterDto } from "../../core/dto/register.dto";
+import { LoginDto } from "../../core/dto/login.dto";
 
 
 @Controller('users')
