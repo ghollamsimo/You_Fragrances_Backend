@@ -28,4 +28,8 @@ export class UserUseCase{
     index(): Promise<UserEntity[]>{
         return this.userRepository.index();
     }
+
+    followBrand(userId: string, brandId: string){
+        return this.userRepository.followBrand(userId, brandId)
+    }
 }
