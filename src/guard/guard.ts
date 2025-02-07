@@ -6,10 +6,8 @@ import { Observable } from 'rxjs';
 export class JwtAuthGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest();
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const request = context.switchToHttp().getRequest<Request>();  
     const token = this.extractToken(request);
 
     if (!token) {
@@ -18,15 +16,15 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const decoded = this.jwtService.verify(token);
-      request.user = decoded; 
+      request.user = { id: decoded.id, ...decoded };
       return true;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }
   }
 
-  private extractToken(request: any): string | null {
-    const authHeader = request.headers.authorization;
+  private extractToken(request: Request): string | null {
+    const authHeader = request.headers['authorization'];  
     if (!authHeader) {
       return null;
     }
