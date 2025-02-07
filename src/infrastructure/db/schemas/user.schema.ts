@@ -1,5 +1,5 @@
-import { Document } from 'mongoose';
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';;
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -28,6 +28,11 @@ export class User extends Document {
   @Prop({ type: Date, default: Date.now })
   created_at: Date;
 
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Brand' }], 
+    default: [],
+  })
+  followedBrands: string[] 
 }
 
 export const UserModelSchema = SchemaFactory.createForClass(User);
