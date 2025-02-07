@@ -8,10 +8,13 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from '../../core/dto/login.dto';
 import { RegisterDto } from '../../core/dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Brand as BrandDocument} from '../db/schemas/brand.schema';
 
 @Injectable()
 export class UserRepositoryImpl implements UserInterface {
     constructor(@InjectModel(UserDocument.name) private userModel: Model<UserDocument> ,     private readonly jwtService: JwtService,
+    @InjectModel(BrandDocument.name) private brandModel: Model<BrandDocument>,
+
 ) {}
 
 async verifyToken(token: string) {
@@ -75,4 +78,26 @@ async verifyToken(token: string) {
         }
         return {message: 'user updated successfully'}
     }
+
+    async followBrand(userId: string, brandId: string): Promise<{ message: string }> {
+        const brandExists = await this.brandModel.findById(brandId);
+        if (!brandExists) {
+          throw new Error('Brand not found');
+        }
+      
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+          throw new Error('User not found');
+        }
+      
+        if (user.followedBrands.includes(brandId)) {
+          return { message: 'Brand already followed' };
+        }
+      
+        user.followedBrands.push(brandId);
+        await user.save();
+      
+        return { message: 'Brand followed successfully' };
+      }
+      
 }
