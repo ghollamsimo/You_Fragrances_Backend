@@ -3,25 +3,31 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { User, UserModelSchema } from '../infrastructure/db/schemas/user.schema';
+import { Brand, BrandModelSchema } from '../infrastructure/db/schemas/brand.schema';
 import { UserController } from '../interface/http/user.controller';
 import { UserUseCase } from '../application/usecases/user.usecase';
 import { UserRepositoryImpl } from '../infrastructure/repositories/user.repository.impl';
-import { JwtAuthGuard } from '../guard/guard';  
+import { JwtAuthGuard } from '../guard/guard';
+import { BrandModule } from './brand.module'; 
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserModelSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserModelSchema },
+      { name: Brand.name, schema: BrandModelSchema }, 
+    ]),
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'), 
+        secret: configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: '1h' },
       }),
     }),
+    BrandModule, 
   ],
   controllers: [UserController],
   providers: [
@@ -31,8 +37,8 @@ import { JwtAuthGuard } from '../guard/guard';
       useClass: UserRepositoryImpl,
     },
     UserRepositoryImpl,
-    JwtAuthGuard, 
+    JwtAuthGuard,
   ],
-  exports: [JwtModule], 
+  exports: [JwtModule],
 })
 export class AuthModule {}
