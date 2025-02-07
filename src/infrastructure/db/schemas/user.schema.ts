@@ -32,7 +32,7 @@ export class User extends Document {
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Brand' }], 
     default: [],
   })
-  followedBrands: MongooseSchema.Types.ObjectId[]
+  followedBrands: string[] 
 }
 
 export const UserModelSchema = SchemaFactory.createForClass(User);
