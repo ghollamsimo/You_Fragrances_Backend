@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { UserUseCase } from "../../application/usecases/user.usecase";
 import { UserEntity } from "../../core/entities/user.entity";
 import { RegisterDto } from "../../core/dto/register.dto";
 import { LoginDto } from "../../core/dto/login.dto";
+import { JwtAuthGuard } from "src/guard/guard";
 
 
 @Controller('users')
@@ -36,5 +37,12 @@ export class UserController {
     @Put('/update/:id')
     async update(@Param('id') id: string, @Body() body: RegisterDto){
         return await this.userUseCase.update(id, body)
+    }
+
+      @UseGuards(JwtAuthGuard)
+    @Post('/followBrand/:brand_id')
+    async followBrand(@Param('brand_id') brandId: string, @Req() request: Request) {
+      const userId = request?.user?.id;       
+      return await this.userUseCase.followBrand(userId, brandId);
     }
 }
