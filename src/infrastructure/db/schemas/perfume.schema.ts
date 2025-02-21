@@ -1,22 +1,30 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 
-@Schema()
-class Perfume extends Document{
-    @Prop({ required: true })
-    name: string;
+export type PerfumeDocument = Perfume & Document;
 
-    @Prop({ required: true })
-    image: string;
+@Schema({ collection: 'perfumes', timestamps: true }) 
+export class Perfume {
+  @Prop({ required: true, trim: true })
+  name: string;
 
-    @Prop({required: true, type: MongooseSchema.Types.ObjectId, ref: 'Brand'})
-    brand: string
+  @Prop({ required: true })
+  image: string;
 
-    @Prop({required: true,   type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Note' }], })
-    notes: string[]
-    
-    @Prop({required: true,   type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Review' }], })
-    reviews: string[]
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Brand', required: true, index: true }) 
+  brand: string;
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Note' }], default: [] })
+  topNotes: MongooseSchema.Types.ObjectId
+;
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Note' }], default: [] })
+  middleNotes: MongooseSchema.Types.ObjectId
+;
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Note' }], default: [] })
+  baseNotes: MongooseSchema.Types.ObjectId
+;
 }
 
-export const PerfumeModelSchema = SchemaFactory.createForClass(Perfume);
+export const PerfumeSchema = SchemaFactory.createForClass(Perfume);
