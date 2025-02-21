@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth.module';
 import { BrandModule } from './brand.module';
 import { ChatbotModule } from './chatbot.module';
+import { NoteModule } from './note.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { ChatbotModule } from './chatbot.module';
     ConfigModule.forRoot({isGlobal: true}),
     AuthModule,
     BrandModule,
-    ChatbotModule
+    ChatbotModule,
+    NoteModule
   ],
   controllers: [],
   providers: [],
