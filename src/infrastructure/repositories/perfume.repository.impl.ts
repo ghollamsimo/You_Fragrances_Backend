@@ -5,7 +5,7 @@ import { PerfumeEntity } from "src/core/entities/perfume.entity";
 import { PerfumeInterface } from "src/core/interfaces/perfume.interface";
 import { Perfume as PerfumeDocument } from "../db/schemas/perfume.schema";
 import { Model } from "mongoose";
-import { GetPerfumeIndexScreenDto } from "src/core/dto/nsit/perfume-get-index.dto";
+import { GetPerfumeIndexScreenDto } from "src/core/dto/get/perfume-get-index.dto";
 
 @Injectable()
 export class PerfumeRepositoryImpl implements PerfumeInterface {
