@@ -2,12 +2,14 @@ export class BrandDTO{
     readonly name : string;
     readonly image : string;
     readonly description : string;
-    readonly type : any;
+    readonly country : string;
+    readonly founded : number;
 
-    constructor(name: string, image: string, description: string , type: any){
+    constructor(name: string, image: string, description: string , country: string, founded: number){
         this.name = name;
         this.image = image;
         this.description = description;
-        this.type = type;
+        this.country = country;
+        this.founded = founded
     }
 }
