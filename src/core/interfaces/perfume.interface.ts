@@ -1,4 +1,4 @@
-import { GetPerfumeIndexScreenDto } from "../dto/nsit/perfume-get-index.dto";
+import { GetPerfumeIndexScreenDto } from "../dto/get/perfume-get-index.dto";
 import { PerfumeDTO } from "../dto/perfume.dto";
 import { PerfumeEntity } from "../entities/perfume.entity";
 
