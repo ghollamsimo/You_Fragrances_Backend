@@ -6,6 +6,7 @@ import { Brand, BrandModelSchema } from 'src/infrastructure/db/schemas/brand.sch
 import { BrandController } from 'src/interface/http/brand.controller';
 import { BrandUseCase } from 'src/application/usecases/brand.usecase';
 import { BrandRepositoryImpl } from 'src/infrastructure/repositories/brand.repository.impl';
+import { MinioService } from 'src/application/usecases/minio.usecase';
 // import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -19,12 +20,13 @@ import { BrandRepositoryImpl } from 'src/infrastructure/repositories/brand.repos
   controllers: [BrandController],
   providers: [
     BrandUseCase,
+    MinioService,
     {
       provide: 'BrandInterface',
       useClass: BrandRepositoryImpl,
     },
     BrandRepositoryImpl,
   ],
-  exports: [], 
+  exports: [MinioService], 
 })
 export class BrandModule {}

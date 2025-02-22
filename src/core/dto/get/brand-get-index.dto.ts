@@ -1,10 +1,9 @@
-import { Types } from "mongoose";
-
-export class GetBrandIndexScreenDto{
+export class GetBrandIndexScreenDto {
     constructor(
-        public _id: Types.ObjectId,  
-            public name: string,
-            public image: string,
-            public description: string
-        ){}
-}
+      public readonly _id: string,  
+      public readonly name: string,
+      public readonly image: string,
+      public readonly description: string
+    ) {}
+  }
+  

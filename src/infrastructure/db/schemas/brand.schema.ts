@@ -1,11 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export enum Type {
-  NICHE = 'NICHE',
-  DESIGNER = 'DESIGNER',
-  ULTRA_NICHE = 'ULTRA_NICHE',
-}
 
 @Schema()
 export class Brand extends Document {
@@ -18,13 +13,11 @@ export class Brand extends Document {
   @Prop({ required: true })
   description: string;
 
-  @Prop({
-    required: true,
-    type: String,
-    enum: Type,
-    default: Type.DESIGNER,
-  })
-  type: Type;
+  @Prop({required: true})
+  country: string; 
+
+  @Prop({required: true})
+  founded: number; 
 }
 
 export const BrandModelSchema = SchemaFactory.createForClass(Brand);
