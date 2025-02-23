@@ -6,6 +6,7 @@ import { BrandModule } from './brand.module';
 import { ChatbotModule } from './chatbot.module';
 import { NoteModule } from './note.module';
 import { PerfumeModule } from './perfume.module';
+import { ReviewModule } from './review.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { PerfumeModule } from './perfume.module';
     BrandModule,
     ChatbotModule,
     NoteModule,
-    PerfumeModule
+    PerfumeModule,
+    ReviewModule
   ],
   controllers: [],
   providers: [],
