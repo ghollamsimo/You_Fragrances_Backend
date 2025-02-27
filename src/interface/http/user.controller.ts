@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { UserUseCase } from "../../application/usecases/user.usecase";
 import { UserEntity } from "../../core/entities/user.entity";
 import { RegisterDto } from "../../core/dto/register.dto";
@@ -45,4 +45,18 @@ export class UserController {
       const userId = request?.user?.id;       
       return await this.userUseCase.followBrand(userId, brandId);
     }
+
+    @Get('/count')
+    async count() {
+      try {
+        const result = await this.userUseCase.count();
+        return { success: true, data: result };
+      } catch (error) {
+        throw new HttpException(
+          { success: false, message: error.message },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+
 }
