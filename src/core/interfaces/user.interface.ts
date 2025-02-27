@@ -9,4 +9,5 @@ export interface UserInterface {
     update(id:string, userDto: RegisterDto): Promise<{message: string}>
     delete(id:string): Promise<{ message: string }>
     followBrand(userId: string, brandId: string): Promise<{ message: string }>
+    count(): Promise<{ users: number; perfumes: number; brands: number }[]>
 }
