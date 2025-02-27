@@ -9,4 +9,5 @@ export interface PerfumeInterface {
         index();
         show(id: string)
       getIndexScreen(): Promise<GetPerfumeIndexScreenDto[]>
+      getBestPerfume()
 }
