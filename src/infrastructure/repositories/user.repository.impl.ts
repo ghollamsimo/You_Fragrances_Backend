@@ -3,19 +3,36 @@ import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {UserEntity} from '../../core/entities/user.entity';
 import { Model, Promise } from 'mongoose';
 import {InjectModel} from '@nestjs/mongoose';
-import {User as UserDocument} from '../db/schemas/user.schema';
+import {User, User as UserDocument} from '../db/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from '../../core/dto/login.dto';
 import { RegisterDto } from '../../core/dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
-import { Brand as BrandDocument} from '../db/schemas/brand.schema';
+import { Brand, Brand as BrandDocument} from '../db/schemas/brand.schema';
+import { Perfume, Perfume as PerfumeDocument } from '../db/schemas/perfume.schema';
+import { Favorite } from '../db/schemas/favorite.schema';
 
 @Injectable()
 export class UserRepositoryImpl implements UserInterface {
-    constructor(@InjectModel(UserDocument.name) private userModel: Model<UserDocument> ,     private readonly jwtService: JwtService,
-    @InjectModel(BrandDocument.name) private brandModel: Model<BrandDocument>,
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Brand.name) private brandModel: Model<Brand>,
+    @InjectModel(Perfume.name) private perfumeModel: Model<Perfume>,
+    @InjectModel(Favorite.name) private favoriteModel: Model<Favorite>,
+    private readonly jwtService: JwtService,
+  ) {}
 
-) {}
+  async count(): Promise<{ users: number; perfumes: number; brands: number }[]> {
+    try {
+      const users = await this.userModel.countDocuments();
+      const perfumes = await this.perfumeModel.countDocuments();
+      const brands = await this.brandModel.countDocuments();
+  
+      return [{ users, perfumes, brands }];
+    } catch (error) {
+    }
+  }
+  
 
 async verifyToken(token: string) {
     try {
@@ -32,9 +49,21 @@ async verifyToken(token: string) {
       throw new UnauthorizedException('Token validation failed');
     }
   }
-    async index(): Promise<UserEntity[]> {
-        return await this.userModel.find({role: 'client'}).select('_id name email role created_at') 
-      }
+  async index(): Promise<UserEntity[]> {
+    const users = await this.userModel
+      .find({ role: 'client' })
+      .select('_id name email role created_at')
+      .lean(); 
+ 
+  
+    for (const user of users) {
+      const likes = await this.favoriteModel.countDocuments({ user: user._id });
+      (user as any).likes = likes;
+    }
+    return users;
+  }
+  
+  
     async store(user: RegisterDto): Promise<UserEntity> {
         const saltRounds = 10;
         user.password = await bcrypt.hash(user.password, saltRounds);
