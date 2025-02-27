@@ -32,4 +32,9 @@ export class UserUseCase{
     followBrand(userId: string, brandId: string){
         return this.userRepository.followBrand(userId, brandId)
     }
+
+    count(){
+        return this.userRepository.count()
+    }
+
 }
