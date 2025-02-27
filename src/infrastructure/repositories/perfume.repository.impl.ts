@@ -18,7 +18,34 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
     @InjectModel(Brand.name) private readonly brandModel: Model<BrandDocument>,
     @InjectModel(Note.name) private readonly noteModel: Model<NoteDocument>,
   ) {}
-
+  async getBestPerfume(): Promise<GetPerfumeIndexScreenDto[]> {
+    const bestRatedPerfumes = await this.reviewModel.aggregate([
+      { $group: { _id: '$perfume', averageRating: { $avg: '$rating' } } },
+      { $match: { averageRating: {$gte: 4.5, $lte: 5} } }, 
+    ]).exec();
+  
+    if (!bestRatedPerfumes.length) return []; 
+  
+    const perfumes = await this.perfumeModel
+      .find({ _id: { $in: bestRatedPerfumes.map((p) => p._id) } }, '_id name image brand')
+      .populate('brand')
+      .exec();
+  
+    
+      return perfumes.map((perfume) => {
+        const perfumeRating = bestRatedPerfumes.find(p => p._id.toString() === perfume._id.toString())?.averageRating || 0;
+    
+        return new GetPerfumeIndexScreenDto(
+          perfume._id.toString(),
+          perfume.name,
+          perfume.image,
+          (perfume.brand as any).name,
+          Number(perfumeRating.toFixed(1)) 
+        );
+      });
+  }
+  
+  
   async getIndexScreen(): Promise<GetPerfumeIndexScreenDto[]> {
     const perfumes = await this.perfumeModel
       .find({}, '_id name image brand')
