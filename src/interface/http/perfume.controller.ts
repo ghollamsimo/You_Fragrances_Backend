@@ -33,4 +33,9 @@ export class PerfumeController{
     async update(@Param('id') id: string, perfumeDto: PerfumeDTO){
         
     }
+
+    @Get('/bestPerfume')
+    async getBestPerfume(){
+        return await this.perfumeUseCase.getBestPerfume()
+    }
 }
