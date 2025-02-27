@@ -9,12 +9,16 @@ import { UserUseCase } from '../application/usecases/user.usecase';
 import { UserRepositoryImpl } from '../infrastructure/repositories/user.repository.impl';
 import { JwtAuthGuard } from '../guard/guard';
 import { BrandModule } from './brand.module'; 
+import { Perfume, PerfumeSchema } from 'src/infrastructure/db/schemas/perfume.schema';
+import { Favorite, FavoriteSchema } from 'src/infrastructure/db/schemas/favorite.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserModelSchema },
       { name: Brand.name, schema: BrandModelSchema }, 
+      { name: Perfume.name, schema: PerfumeSchema }, 
+      { name: Favorite.name, schema: FavoriteSchema }, 
     ]),
     ConfigModule.forRoot({
       isGlobal: true,
