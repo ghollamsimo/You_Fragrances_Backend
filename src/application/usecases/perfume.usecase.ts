@@ -33,4 +33,7 @@ export class PerfumeUseCase {
        return this.perfumeRepositoryImpl.getIndexScreen()
     }
     
+    getBestPerfume(){
+        return this.perfumeRepositoryImpl.getBestPerfume()
+    }
 }
