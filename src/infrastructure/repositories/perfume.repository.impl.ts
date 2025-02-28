@@ -21,20 +21,20 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
   async getBestPerfume(): Promise<GetPerfumeIndexScreenDto[]> {
     const bestRatedPerfumes = await this.reviewModel.aggregate([
       { $group: { _id: '$perfume', averageRating: { $avg: '$rating' } } },
-      { $match: { averageRating: {$gte: 4.5, $lte: 5} } }, 
+      { $match: { averageRating: { $gte: 4.5, $lte: 5 } } }, 
+      { $sort: { averageRating: -1 } }, 
+      { $limit: 5 }
     ]).exec();
-  
-    if (!bestRatedPerfumes.length) return []; 
-  
+
+    if (!bestRatedPerfumes.length) return [];  
+
     const perfumes = await this.perfumeModel
       .find({ _id: { $in: bestRatedPerfumes.map((p) => p._id) } }, '_id name image brand')
       .populate('brand')
       .exec();
-  
-    
-      return perfumes.map((perfume) => {
+
+    return perfumes.map((perfume) => {
         const perfumeRating = bestRatedPerfumes.find(p => p._id.toString() === perfume._id.toString())?.averageRating || 0;
-    
         return new GetPerfumeIndexScreenDto(
           perfume._id.toString(),
           perfume.name,
@@ -42,8 +42,9 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
           (perfume.brand as any).name,
           Number(perfumeRating.toFixed(1)) 
         );
-      });
-  }
+    });
+}
+
   
   
   async getIndexScreen(): Promise<GetPerfumeIndexScreenDto[]> {
