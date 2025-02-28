@@ -11,6 +11,7 @@ import { JwtAuthGuard } from '../guard/guard';
 import { BrandModule } from './brand.module'; 
 import { Perfume, PerfumeSchema } from 'src/infrastructure/db/schemas/perfume.schema';
 import { Favorite, FavoriteSchema } from 'src/infrastructure/db/schemas/favorite.schema';
+import { MinioService } from 'src/application/usecases/minio.usecase';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { Favorite, FavoriteSchema } from 'src/infrastructure/db/schemas/favorite
   controllers: [UserController],
   providers: [
     UserUseCase,
+    MinioService,
     {
       provide: 'UserInterface',
       useClass: UserRepositoryImpl,
@@ -43,6 +45,6 @@ import { Favorite, FavoriteSchema } from 'src/infrastructure/db/schemas/favorite
     UserRepositoryImpl,
     JwtAuthGuard,
   ],
-  exports: [JwtModule],
+  exports: [JwtModule, MinioService],
 })
 export class AuthModule {}
