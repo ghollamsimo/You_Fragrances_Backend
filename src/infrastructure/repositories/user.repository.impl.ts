@@ -24,7 +24,7 @@ export class UserRepositoryImpl implements UserInterface {
 
   async count(): Promise<{ users: number; perfumes: number; brands: number }[]> {
     try {
-      const users = await this.userModel.countDocuments();
+      const users = await this.userModel.countDocuments({role: 'client'});
       const perfumes = await this.perfumeModel.countDocuments();
       const brands = await this.brandModel.countDocuments();
   
@@ -52,16 +52,18 @@ async verifyToken(token: string) {
   async index(): Promise<UserEntity[]> {
     const users = await this.userModel
       .find({ role: 'client' })
-      .select('_id name email role created_at')
+      .select('_id name email role image created_at')
       .lean(); 
- 
-  
+
     for (const user of users) {
       const likes = await this.favoriteModel.countDocuments({ user: user._id });
       (user as any).likes = likes;
+      (user as any).brandCount = user.followedBrands ? user.followedBrands.length : 0;
     }
+
     return users;
-  }
+}
+
   
   
     async store(user: RegisterDto): Promise<UserEntity> {
@@ -75,6 +77,7 @@ async verifyToken(token: string) {
             savedUser.role,
             savedUser.password,
             savedUser.gender,
+            savedUser.image
         );
     }
 

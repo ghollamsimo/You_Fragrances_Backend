@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { UserUseCase } from "../../application/usecases/user.usecase";
 import { UserEntity } from "../../core/entities/user.entity";
 import { RegisterDto } from "../../core/dto/register.dto";
 import { LoginDto } from "../../core/dto/login.dto";
 import { JwtAuthGuard } from "src/guard/guard";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 
 @Controller('users')
@@ -11,8 +12,9 @@ export class UserController {
     constructor(private readonly userUseCase: UserUseCase) {}
 
     @Post('/store')
-    async store(@Body() body: RegisterDto): Promise<UserEntity> {
-        return await this.userUseCase.execute(body);
+    @UseInterceptors(FileInterceptor('image'))
+    async store(@Body() body: RegisterDto, @UploadedFile() file: Express.Multer.File): Promise<UserEntity> {
+        return await this.userUseCase.execute(body, file);
     }
 
     @Post("login")
