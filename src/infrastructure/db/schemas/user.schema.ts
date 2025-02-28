@@ -25,6 +25,9 @@ export class User extends Document {
   })
   role: string;
 
+  @Prop({ required: true })
+  image: string;
+
   @Prop({ type: Date, default: Date.now })
   created_at: Date;
 
