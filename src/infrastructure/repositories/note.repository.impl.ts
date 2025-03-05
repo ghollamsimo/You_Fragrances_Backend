@@ -5,6 +5,7 @@ import { NoteEntity } from "src/core/entities/note.entity";
 import { NoteInterface } from "src/core/interfaces/note.interface";
 import { Note as NoteDocument } from "../db/schemas/note.schema";
 import { Model } from "mongoose";
+import { Ingredient } from "../db/schemas/note.schema";
 
 @Injectable()
 export class NoteRepositoryImpl implements NoteInterface {
@@ -68,35 +69,61 @@ export class NoteRepositoryImpl implements NoteInterface {
     const createdNote = new this.noteModel({
       type: noteDTO.type,
       category: noteDTO.category,
-      ingredients: noteDTO.ingredients, 
+      ingredients: noteDTO.ingredients,
     });
     const savedNote = await createdNote.save();
     return new NoteEntity(savedNote);
   }
 
-    async delete(id: string): Promise<{ message: string }> {
-        const deleteNote = await this.noteModel.findByIdAndDelete(id);
-        if (!deleteNote) {
-            throw new NotFoundException('Note not found');
-        }
-        return { message: 'Note deleted successfully' };
+  async addSingleIngredient(noteId: string, ingredient: Ingredient): Promise<NoteEntity> {
+    const note = await this.noteModel.findById(noteId);
+    if (!note) {
+      throw new NotFoundException(`Note with ID "${noteId}" not found.`);
     }
 
-    async update(id: string, noteDTO: NoteDTO): Promise<{ message: string }> {
-        if (!NoteRepositoryImpl.validCategories[noteDTO.type]?.includes(noteDTO.category)) {
-            throw new BadRequestException(
-                `Invalid category "${noteDTO.category}" for note type "${noteDTO.type}".`
-            );
-        }
-
-        const updatedNote = await this.noteModel.findByIdAndUpdate(id, noteDTO, { new: true });
-        if (!updatedNote) {
-            throw new NotFoundException('Note not found');
-        }
-        return { message: 'Note updated successfully' };
+    const validIngredients = NoteRepositoryImpl.validIngredientsByCategory[note.type][note.category];
+    if (!validIngredients.includes(ingredient.name)) {
+      throw new BadRequestException(
+        `Invalid ingredient "${ingredient.name}" for category "${note.category}" in type "${note.type}".`
+      );
     }
 
-    index() {
-        return this.noteModel.find().exec();
+    const ingredientExists = note.ingredients.some((i) => i.name === ingredient.name);
+    if (ingredientExists) {
+      throw new BadRequestException(
+        `Ingredient "${ingredient.name}" already exists in note with ID "${noteId}".`
+      );
     }
+
+    note.ingredients.push(ingredient);
+
+    const updatedNote = await note.save();
+    return new NoteEntity(updatedNote);
+  }
+
+  async delete(id: string): Promise<{ message: string }> {
+    const deleteNote = await this.noteModel.findByIdAndDelete(id);
+    if (!deleteNote) {
+      throw new NotFoundException('Note not found');
+    }
+    return { message: 'Note deleted successfully' };
+  }
+
+  async update(id: string, noteDTO: NoteDTO): Promise<{ message: string }> {
+    if (!NoteRepositoryImpl.validCategories[noteDTO.type]?.includes(noteDTO.category)) {
+      throw new BadRequestException(
+        `Invalid category "${noteDTO.category}" for note type "${noteDTO.type}".`
+      );
+    }
+
+    const updatedNote = await this.noteModel.findByIdAndUpdate(id, noteDTO, { new: true });
+    if (!updatedNote) {
+      throw new NotFoundException('Note not found');
+    }
+    return { message: 'Note updated successfully' };
+  }
+
+  index() {
+    return this.noteModel.find().exec();
+  }
 }
