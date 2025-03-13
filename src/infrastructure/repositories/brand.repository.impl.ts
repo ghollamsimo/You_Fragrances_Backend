@@ -41,8 +41,34 @@ export class BrandRepositoryImpl implements BrandInterface {
   }
 
   async index() {
-    return this.brandModel.find().exec();
-  }
+    return this.brandModel.aggregate([
+      {
+        $lookup: {
+          from: 'perfumes', 
+          localField: '_id',
+          foreignField: 'brand',
+          as: 'perfumes'
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          image: 1,
+          description: 1,
+          perfumes: {
+            _id: 1,
+            name: 1,
+            image: 1,
+          },
+          hasPerfumes: { $gt: [{ $size: "$perfumes" }, 0] } 
+        }
+      }
+    ]);
+}
+
+  
+  
 
   async show(id: string) {
     const brand = await this.brandModel.findById(id);

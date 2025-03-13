@@ -3,4 +3,5 @@ export class ReviewDto{
     perfume :string
     rating: number
     comment: string
+    recommended: boolean
 }

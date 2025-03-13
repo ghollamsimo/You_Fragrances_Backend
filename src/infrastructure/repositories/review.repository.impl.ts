@@ -14,18 +14,18 @@ export class ReviewRepositoryImpl implements ReviewInterface {
     async store(reviewDto: ReviewDto): Promise<ReviewEntity> {
         const newReview = new this.reviewModel(reviewDto);
         await newReview.save();
-        return new ReviewEntity(newReview.user, newReview.perfume, newReview.rating, newReview.comment);
+        return new ReviewEntity(newReview.user, newReview.perfume, newReview.rating, newReview.comment, newReview.recommended);
     }
 
     async index(): Promise<ReviewEntity[]> {
         const reviews = await this.reviewModel.find().populate("user", "name").populate("perfume", "name image");
-        return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment));
+        return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment, review.recommended));
     }
 
     async show(id: string): Promise<ReviewEntity> {
         const review = await this.reviewModel.findById(id).populate("user", "name").populate("perfume", "name image");
         if (!review) throw new NotFoundException("Review not found");
-        return new ReviewEntity(review.user, review.perfume, review.rating, review.comment);
+        return new ReviewEntity(review.user, review.perfume, review.rating, review.comment, review.recommended);
     }
 
     async update(id: string, reviewDto: ReviewDto): Promise<{ message: string }> {
@@ -42,11 +42,11 @@ export class ReviewRepositoryImpl implements ReviewInterface {
 
     async getReviewsByPerfume(perfumeId: string): Promise<ReviewEntity[]> {
         const reviews = await this.reviewModel.find({ perfume: perfumeId }).populate("user", "name").populate("perfume", "name image");
-        return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment));
+        return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment, review.recommended));
     }
 
     async getReviewsByUser(userId: string): Promise<ReviewEntity[]> {
         const reviews = await this.reviewModel.find({ user: userId }).populate("perfume", "name image").populate("perfume", "name image");
-        return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment));
+        return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment, review.recommended));
     }
 }

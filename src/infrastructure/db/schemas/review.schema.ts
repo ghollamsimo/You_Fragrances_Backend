@@ -19,6 +19,9 @@ export class Review {
   @Prop({ required: true, trim: true })
   comment: string;
 
+  @Prop({ required: true })
+  recommended: boolean;
+
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 }

@@ -1,10 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './module/app.module';
-import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import * as cors from 'cors';
 
-dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +15,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 8080);
+  console.log(`this projet runing in this port : http://localhost:8080`)
+  await app.listen(8080)
 }
 bootstrap();

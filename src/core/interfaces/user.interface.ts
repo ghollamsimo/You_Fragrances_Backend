@@ -8,6 +8,6 @@ export interface UserInterface {
     index(): Promise<UserEntity[]>
     update(id:string, userDto: RegisterDto): Promise<{message: string}>
     delete(id:string): Promise<{ message: string }>
-    followBrand(userId: string, brandId: string): Promise<{ message: string }>
+    followBrand(userId: string, brandId: string)
     count(): Promise<{ users: number; perfumes: number; brands: number }[]>
 }

@@ -99,7 +99,7 @@ async verifyToken(token: string) {
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
         }
-        const token = this.jwtService.sign({ id: user._id, name: user.name, email: user.email });
+        const token = this.jwtService.sign({ id: user._id, name: user.name, email: user.email, image: user.image });
         return { token };
     }
 
@@ -111,7 +111,7 @@ async verifyToken(token: string) {
         return {message: 'user updated successfully'}
     }
 
-    async followBrand(userId: string, brandId: string): Promise<{ message: string }> {
+    async followBrand(userId: string, brandId: string) {
         const brandExists = await this.brandModel.findById(brandId);
         if (!brandExists) {
           throw new Error('Brand not found');
@@ -128,8 +128,8 @@ async verifyToken(token: string) {
       
         user.followedBrands.push(brandId);
         await user.save();
-      
-        return { message: 'Brand followed successfully' };
+        const suggestedPerfumes = await this.perfumeModel.find({ brandId })
+        return { message: 'Brand followed successfully' , suggestedPerfumes};
       }
       
 }
