@@ -18,10 +18,11 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
     @InjectModel(Brand.name) private readonly brandModel: Model<BrandDocument>,
     @InjectModel(Note.name) private readonly noteModel: Model<NoteDocument>,
   ) {}
+  
   async getBestPerfume(): Promise<GetPerfumeIndexScreenDto[]> {
     const bestRatedPerfumes = await this.reviewModel.aggregate([
       { $group: { _id: '$perfume', averageRating: { $avg: '$rating' } } },
-      { $match: { averageRating: { $gte: 4.5, $lte: 5 } } }, 
+      { $match: { averageRating: { $gte: 4, $lte: 5 } } }, 
       { $sort: { averageRating: -1 } }, 
       { $limit: 5 }
     ]).exec();
@@ -51,6 +52,7 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
     const perfumes = await this.perfumeModel
       .find({}, '_id name image brand')
       .populate('brand')
+      .limit(5)
       .exec();
   
     const ratings = await this.reviewModel.aggregate([
@@ -119,7 +121,7 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
   async index() {
     const perfumes = await this.perfumeModel
       .find()
-      .populate('brand')
+      .populate({ path: 'brand', select: 'name image' })
       .populate({ path: 'topNotes' })
       .populate({ path: 'middleNotes' })
       .populate({ path: 'baseNotes' })
@@ -127,17 +129,36 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
 
     const ratings = await this.reviewModel.aggregate([
       { $group: { _id: '$perfume', averageRating: { $avg: '$rating' } } },
-    ]).exec();
+    ]);
 
     const ratingsMap = new Map(
       ratings.map((r) => [r._id.toString(), Number(r.averageRating.toFixed(1))])
     );
 
+    const reviews = await this.reviewModel.find().populate('user', 'name image recommended');
+
+    const reviewsMap = new Map();
+    reviews.forEach(review => {
+        const perfumeId = review.perfume.toString();
+        if (!reviewsMap.has(perfumeId)) {
+            reviewsMap.set(perfumeId, []);
+        }
+        reviewsMap.get(perfumeId).push({
+            user: review.user,
+            rating: review.rating,
+            comment: review.comment,
+            recommended: review.recommended,
+            createdAt: review.createdAt
+        });
+    });
+
     return perfumes.map((perfume) => ({
       ...perfume.toObject(),
       averageRating: ratingsMap.get(perfume._id.toString()) || 0,
+      reviews: reviewsMap.get(perfume._id.toString()) || [],
     }));
-  }
+}
+
 
   async show(id: string) {
     const perfume = await this.perfumeModel

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth.module';
 import { BrandModule } from './brand.module';
 import { ChatbotModule } from './chatbot.module';
@@ -11,8 +11,16 @@ import { FavoriteModule } from './favorite.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/youFragrances'),
-    ConfigModule.forRoot({isGlobal: true}),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+        retryAttempts: 5,
+        retryDelay: 3000,
+      }),
+      inject: [ConfigService],
+    }),
     AuthModule,
     BrandModule,
     ChatbotModule,

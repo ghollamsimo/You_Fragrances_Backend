@@ -43,7 +43,7 @@ export class UserController {
 
       @UseGuards(JwtAuthGuard)
     @Post('/followBrand/:brand_id')
-    async followBrand(@Param('brand_id') brandId: string, @Req() request: Request) {
+    async followBrand(@Param('brand_id') brandId: string, @Req() request) {
       const userId = request?.user?.id;       
       return await this.userUseCase.followBrand(userId, brandId);
     }
