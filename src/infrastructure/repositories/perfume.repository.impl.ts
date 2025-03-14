@@ -7,7 +7,6 @@ import { PerfumeInterface } from "src/core/interfaces/perfume.interface";
 import { Perfume, PerfumeDocument } from "../db/schemas/perfume.schema";
 import { Review, ReviewDocument } from "../db/schemas/review.schema";
 import { Brand, BrandDocument } from "../db/schemas/brand.schema"; 
-import { Note, NoteDocument } from "../db/schemas/note.schema"; 
 import { GetPerfumeIndexScreenDto } from "src/core/dto/get/perfume-get-index.dto";
 
 @Injectable()
@@ -16,7 +15,6 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
     @InjectModel(Perfume.name) private readonly perfumeModel: Model<PerfumeDocument>,
     @InjectModel(Review.name) private readonly reviewModel: Model<ReviewDocument>,
     @InjectModel(Brand.name) private readonly brandModel: Model<BrandDocument>,
-    @InjectModel(Note.name) private readonly noteModel: Model<NoteDocument>,
   ) {}
   
   async getBestPerfume(): Promise<GetPerfumeIndexScreenDto[]> {
@@ -89,17 +87,6 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
     const brandExists = await this.brandModel.findById(brandId).exec();
     if (!brandExists) throw new BadRequestException(`Brand with ID ${perfumeDto.brand} does not exist`);
 
-    const validateNotes = async (notes: any[], fieldName: string) => {
-      if (!Array.isArray(notes)) throw new BadRequestException(`${fieldName} must be an array`);
-      for (const noteId of notes) {
-        const noteExists = await this.noteModel.findById(noteId).exec();
-        if (!noteExists) throw new BadRequestException(`Note with ID ${noteId} in ${fieldName} does not exist`);
-      }
-    };
-
-    await validateNotes(perfumeDto.topNotes || [], 'topNotes');
-    await validateNotes(perfumeDto.middleNotes || [], 'middleNotes');
-    await validateNotes(perfumeDto.baseNotes || [], 'baseNotes');
 
     const createdPerfume = new this.perfumeModel(perfumeDto);
     const savedPerfume = await createdPerfume.save();

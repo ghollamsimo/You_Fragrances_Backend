@@ -23,6 +23,10 @@ export class PerfumeController{
     async getIndexScreen(){
         return await this.perfumeUseCase.getIndexScreen()
     }
+    @Get('show/:perfumeId')
+    async show(@Param('perfumeId')perfumeId: string){
+        return await this.perfumeUseCase.show(perfumeId)
+    }
 
     @Delete('destroy/:id')
     async delete(@Param('id') id: string){

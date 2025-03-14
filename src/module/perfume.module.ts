@@ -5,7 +5,6 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { MinioService } from "src/application/usecases/minio.usecase";
 import { PerfumeUseCase } from "src/application/usecases/perfume.usecase";
 import { Brand, BrandModelSchema } from "src/infrastructure/db/schemas/brand.schema";
-import { Note, NoteSchema } from "src/infrastructure/db/schemas/note.schema"; 
 import {  Perfume, PerfumeSchema } from "src/infrastructure/db/schemas/perfume.schema";
 import { Review, ReviewSchema } from "src/infrastructure/db/schemas/review.schema";
 import { PerfumeRepositoryImpl } from "src/infrastructure/repositories/perfume.repository.impl";
@@ -18,7 +17,6 @@ import { PerfumeController } from "src/interface/http/perfume.controller";
           { name: Perfume.name, schema: PerfumeSchema },
           { name: Review.name, schema: ReviewSchema },
           { name:  Brand.name, schema: BrandModelSchema },
-          { name:  Note.name, schema: NoteSchema },
         ]),
         ConfigModule.forRoot({
           isGlobal: true,

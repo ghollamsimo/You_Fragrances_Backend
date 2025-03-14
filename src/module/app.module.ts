@@ -4,10 +4,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth.module';
 import { BrandModule } from './brand.module';
 import { ChatbotModule } from './chatbot.module';
-import { NoteModule } from './note.module';
 import { PerfumeModule } from './perfume.module';
 import { ReviewModule } from './review.module';
 import { FavoriteModule } from './favorite.module';
+import { IngredientModule } from './ingredient.module';
 
 @Module({
   imports: [
@@ -24,10 +24,10 @@ import { FavoriteModule } from './favorite.module';
     AuthModule,
     BrandModule,
     ChatbotModule,
-    NoteModule,
     PerfumeModule,
     ReviewModule,
     FavoriteModule,
+    IngredientModule
   ],
   controllers: [],
   providers: [],
