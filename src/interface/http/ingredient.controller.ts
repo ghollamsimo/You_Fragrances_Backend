@@ -1,19 +1,22 @@
-import { Controller, Post, Get, Param, Body, Delete, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Post, Get, Param, Body, Delete, Put, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { IngredientUseCase } from 'src/application/usecases/ingredient.usecase';
-import { IngredientDTO } from 'src/core/dto/ingredient.dto';  // DTO for Ingredient
+import { IngredientDTO } from 'src/core/dto/ingredient.dto'; 
 
 @Controller('ingredients')
 export class IngredientController {
     constructor(private readonly ingredientService: IngredientUseCase) {}
 
-    @Post()
-    @UseInterceptors(FileInterceptor('image'))
-    
-    async store(@Body() ingredientDto: IngredientDTO,  @UploadedFile() file: Express.Multer.File) {
-        return this.ingredientService.store(ingredientDto, file);
-    }
+            @Post()
+        @UseInterceptors(AnyFilesInterceptor()) 
+        async store(
+            @Body() ingredientDto: any,
+            @UploadedFiles() files: Express.Multer.File[]
+        ) {
+                return this.ingredientService.store(ingredientDto, files);
+        }
 
+    
     @Get()
     async index() {
         return this.ingredientService.index();

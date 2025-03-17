@@ -101,7 +101,8 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
       savedPerfume.TargetAudience,
       savedPerfume.Volume,
       savedPerfume.Concentration,
-      savedPerfume.sillage
+      savedPerfume.sillage,
+      savedPerfume.Barcode
     );
   }
 
@@ -160,7 +161,7 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
   }
 
   async update(id: string, perfumeDto: PerfumeDTO): Promise<{ message: string }> {
-    const updatedPerfume = await this.perfumeModel.findByIdAndUpdate(id, perfumeDto, { new: true }).lean();
+    const updatedPerfume = await this.perfumeModel.findByIdAndUpdate(id, perfumeDto, { new: true });
     if (!updatedPerfume) throw new NotFoundException('Perfume not found');
     return { message: 'Perfume updated successfully' };
   }

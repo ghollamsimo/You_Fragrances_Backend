@@ -10,7 +10,10 @@ export class UserUseCase{
     constructor(@Inject('UserInterface') private readonly userRepository: UserInterface,
 private readonly minioService: MinioService
 ) {}
-
+    async getFollowedBrand(userId: string){
+        return this.userRepository.getFollowedBrand(userId)
+    }
+    
     async execute(registerDto: RegisterDto, file?: Express.Multer.File): Promise<UserEntity> {
         const imageUrl = file ? await this.minioService.uploadFile(file, 'users') : null;
         return await this.userRepository.store({ ...registerDto, image: imageUrl });

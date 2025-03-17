@@ -19,10 +19,17 @@ export class BrandController {
     delete(@Param('id') id: string){
         return this.brandUseCase.delete(id)
     }
-    @Patch('update/:id')
-    update(@Param('id') id: string, brandDto: BrandDTO){
-        return this.brandUseCase.update(id, brandDto)
-    }
+    @UseInterceptors(FileInterceptor('image')) 
+  @Patch('update/:id')
+  async update(
+    @Param('id') id: string,                  
+    @Body() brandDto: BrandDTO,               
+    @UploadedFile() file: Express.Multer.File 
+  ): Promise<{ message: string }> {
+ 
+    return this.brandUseCase.update(id, brandDto, file);
+  }
+    
 
     @Get('allBrands')
     index(){

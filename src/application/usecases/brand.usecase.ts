@@ -17,9 +17,19 @@ export class BrandUseCase {
         return this.brandRepositoryImpl.delete(id)
     }
 
-    update(id: string, brandDTO: BrandDTO): Promise<{ message: string }>{
-        return this.brandRepositoryImpl.update(id, brandDTO)
+    async update(id: string, brandDTO: BrandDTO, file?: Express.Multer.File): Promise<{ message: string }> {
+        const imageUrl = file ? await this.minioService.uploadFile(file, 'brands') : brandDTO.image;
+        const updatedBrandDTO = new BrandDTO(
+            brandDTO.name,        
+            imageUrl,             
+            brandDTO.description, 
+            brandDTO.country,     
+            brandDTO.founded      
+        );
+
+        return this.brandRepositoryImpl.update(id, updatedBrandDTO);
     }
+    
 
     index(){
         return this.brandRepositoryImpl.index()

@@ -54,7 +54,8 @@ describe('PerfumeUseCase', () => {
             TargetAudience: '',
             Volume: '',
             Concentration: '',
-            sillage: ''
+            sillage: '',
+            Barcode: ''
         };
         const file: Express.Multer.File = { filename: 'test.jpg' } as any;
         minioService.uploadFile.mockResolvedValue('image_url');
@@ -85,6 +86,7 @@ describe('PerfumeUseCase', () => {
             Volume: '',
             Concentration: '',
             sillage: '',
+            Barcode: ''
         };
         perfumeRepository.update.mockResolvedValue({ message: 'Updated' });
         const result = await perfumeUseCase.update('1', perfumeDto);

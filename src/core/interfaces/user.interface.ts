@@ -10,4 +10,5 @@ export interface UserInterface {
     delete(id:string): Promise<{ message: string }>
     followBrand(userId: string, brandId: string)
     count(): Promise<{ users: number; perfumes: number; brands: number }[]>
+    getFollowedBrand(userId: string)
 }

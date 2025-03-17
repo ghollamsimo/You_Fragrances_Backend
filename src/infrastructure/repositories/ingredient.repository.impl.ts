@@ -15,7 +15,12 @@ export class IngredientRepositoryImpl implements IngredientInterface {
     const ingredient = new this.ingredientModel(ingredientDto);
     await ingredient.save();
     return ingredient.toObject();
-  }
+}
+
+async storeMultiple(ingredients: IngredientDTO[]) {
+    const storedIngredients = await this.ingredientModel.insertMany(ingredients);
+    return storedIngredients.map((ingredient) => ingredient.toObject());
+}
 
 
   async delete(id: string): Promise<{ message: string }> {

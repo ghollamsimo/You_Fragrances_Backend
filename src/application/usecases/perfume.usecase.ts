@@ -17,8 +17,24 @@ export class PerfumeUseCase {
         return this.perfumeRepositoryImpl.delete(id)
     }
 
-    update(id: string, perfumeDto: PerfumeDTO): Promise<{ message: string }>{
-        return this.perfumeRepositoryImpl.update(id, perfumeDto)
+    async update(id: string, perfumeDto: PerfumeDTO, file?: Express.Multer.File): Promise<{ message: string }> {
+        const imageUrl = file ? await this.minioService.uploadFile(file, 'perfumes') : perfumeDto.image;
+    
+        const updatePerfume = new PerfumeDTO(
+            perfumeDto.name,
+            imageUrl,
+            perfumeDto.brand,
+            perfumeDto.topNotes,
+            perfumeDto.middleNotes,
+            perfumeDto.baseNotes,
+            perfumeDto.TargetAudience,
+            perfumeDto.Volume,
+            perfumeDto.Concentration,
+            perfumeDto.sillage,
+            perfumeDto.Barcode
+        );
+    
+        return this.perfumeRepositoryImpl.update(id, updatePerfume);
     }
 
     index(){

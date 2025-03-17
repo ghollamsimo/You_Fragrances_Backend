@@ -131,5 +131,10 @@ async verifyToken(token: string) {
         const suggestedPerfumes = await this.perfumeModel.find({ brandId })
         return { message: 'Brand followed successfully' , suggestedPerfumes};
       }
+
+      async getFollowedBrand(userId: string) {
+        return await this.userModel.findById(userId).populate('followedBrands').exec();
+    }
+    
       
 }

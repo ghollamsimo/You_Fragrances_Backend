@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { identity } from "rxjs";
 import { PerfumeUseCase } from "src/application/usecases/perfume.usecase";
@@ -33,9 +33,10 @@ export class PerfumeController{
         return await this.perfumeUseCase.delete(id)
     }
 
-    @Put('update/:id')
-    async update(@Param('id') id: string, perfumeDto: PerfumeDTO){
-        
+    @UseInterceptors(FileInterceptor('image')) 
+    @Patch('update/:id')
+    async update(@Param('id') id: string, perfumeDto: PerfumeDTO,  @UploadedFile() file: Express.Multer.File){
+        return await this.perfumeUseCase.update(id, perfumeDto, file)
     }
 
     @Get('/bestPerfume')

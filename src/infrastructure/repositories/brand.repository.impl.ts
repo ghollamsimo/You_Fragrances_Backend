@@ -12,8 +12,8 @@ export class BrandRepositoryImpl implements BrandInterface {
   constructor(@InjectModel(BrandDocument.name) private readonly brandModel: Model<BrandDocument>) {}
 
   async getIndexScreen(): Promise<GetBrandIndexScreenDto[]> {
-    const brands = await this.brandModel.find({}, '_id name image description').lean()
-    return brands.map(brand => new GetBrandIndexScreenDto(String(brand._id), brand.name, brand.image, brand.description))
+    const brands = await this.brandModel.find({}, '_id name image description country').lean()
+    return brands.map(brand => new GetBrandIndexScreenDto(brand._id, brand.name, brand.image, brand.description , brand.country))
   }
 
   async store(brandDTO: BrandDTO): Promise<BrandEntity> {
@@ -34,38 +34,40 @@ export class BrandRepositoryImpl implements BrandInterface {
 
   async update(id: string, brandDTO: BrandDTO): Promise<{ message: string }> {
     const updatedBrand = await this.brandModel.findByIdAndUpdate(id, brandDTO, { new: true });
-    if (!updatedBrand) {
-      throw new NotFoundException('Brand not found');
-    }
-    return { message: 'Brand updated successfully' };
-  }
 
-  async index() {
-    return this.brandModel.aggregate([
-      {
-        $lookup: {
-          from: 'perfumes', 
-          localField: '_id',
-          foreignField: 'brand',
-          as: 'perfumes'
-        }
-      },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          image: 1,
-          description: 1,
-          perfumes: {
-            _id: 1,
-            name: 1,
-            image: 1,
-          },
-          hasPerfumes: { $gt: [{ $size: "$perfumes" }, 0] } 
-        }
-      }
-    ]);
+    if (!updatedBrand) {
+        throw new NotFoundException('Brand not found');
+    }
+
+    return { message: 'Brand updated successfully' };
 }
+
+
+
+
+async index() {
+  return this.brandModel.aggregate([
+    {
+      $lookup: {
+        from: "perfumes",
+        localField: "_id",
+        foreignField: "brand",
+        as: "perfumes",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        image: 1,
+        description: 1,
+        perfumes: 1,
+        hasPerfumes: { $gt: [{ $size: "$perfumes" }, 0] },
+      },
+    },
+  ]);
+}
+
 
   
   

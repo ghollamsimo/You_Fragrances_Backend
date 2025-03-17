@@ -50,6 +50,9 @@ export class Perfume {
 
   @Prop({ type: String, enum: ['Light', 'Moderate', 'Heavy'], default: 'Moderate' })
   sillage: string;
+
+  @Prop({ required: true, type: String })
+  Barcode: string;
 }
 
 export const PerfumeSchema = SchemaFactory.createForClass(Perfume);

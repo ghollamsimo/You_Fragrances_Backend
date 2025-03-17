@@ -11,6 +11,7 @@ export class PerfumeEntity {
         private readonly TargetAudience: string,
         private readonly Volume: string,
         private readonly Concentration: string,
-        private readonly sillage: string
+        private readonly sillage: string,
+        private readonly Barcode: string
     ) {}
 }

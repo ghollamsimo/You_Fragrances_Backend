@@ -48,6 +48,12 @@ export class UserController {
       return await this.userUseCase.followBrand(userId, brandId);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get("/followedBrand")
+    async getFollowedBrand(@Req() req){
+      return await this.userUseCase.getFollowedBrand(req.user.id)
+    }
+
     @Get('/count')
     async count() {
       try {
