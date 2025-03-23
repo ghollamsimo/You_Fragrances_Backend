@@ -108,44 +108,27 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
 
   async index() {
     const perfumes = await this.perfumeModel
-      .find()
-      .populate({ path: 'brand', select: 'name image' })
-      .populate({ path: 'topNotes' })
-      .populate({ path: 'middleNotes' })
-      .populate({ path: 'baseNotes' })
-      .exec();
+        .find()
+        .populate({ path: 'brand', select: 'name image' })
+        .populate({ path: 'topNotes' })
+        .populate({ path: 'middleNotes' })
+        .populate({ path: 'baseNotes' })
+        .exec();
 
     const ratings = await this.reviewModel.aggregate([
-      { $group: { _id: '$perfume', averageRating: { $avg: '$rating' } } },
+        { $group: { _id: '$perfume', averageRating: { $avg: '$rating' } } },
     ]);
 
     const ratingsMap = new Map(
-      ratings.map((r) => [r._id.toString(), Number(r.averageRating.toFixed(1))])
+        ratings.map((r) => [r._id.toString(), Number(r.averageRating.toFixed(1))])
     );
 
-    const reviews = await this.reviewModel.find().populate('user', 'name image recommended');
-
-    const reviewsMap = new Map();
-    reviews.forEach(review => {
-        const perfumeId = review.perfume.toString();
-        if (!reviewsMap.has(perfumeId)) {
-            reviewsMap.set(perfumeId, []);
-        }
-        reviewsMap.get(perfumeId).push({
-            user: review.user,
-            rating: review.rating,
-            comment: review.comment,
-            recommended: review.recommended,
-            createdAt: review.createdAt
-        });
-    });
-
     return perfumes.map((perfume) => ({
-      ...perfume.toObject(),
-      averageRating: ratingsMap.get(perfume._id.toString()) || 0,
-      reviews: reviewsMap.get(perfume._id.toString()) || [],
+        ...perfume.toObject(),
+        averageRating: ratingsMap.get(perfume._id.toString()) || 0,
     }));
 }
+
 
 
   async show(id: string) {
@@ -169,6 +152,7 @@ export class PerfumeRepositoryImpl implements PerfumeInterface {
   async delete(id: string): Promise<{ message: string }> {
     const deletedPerfume = await this.perfumeModel.findByIdAndDelete(id).lean();
     if (!deletedPerfume) throw new NotFoundException('Perfume not found');
+    await this.reviewModel.deleteMany({ perfume: id });
     return { message: 'Perfume deleted successfully' };
   }
 }

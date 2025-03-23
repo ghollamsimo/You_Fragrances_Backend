@@ -41,10 +41,33 @@ export class ReviewRepositoryImpl implements ReviewInterface {
     }
 
     async getReviewsByPerfume(perfumeId: string): Promise<ReviewEntity[]> {
-        const reviews = await this.reviewModel.find({ perfume: perfumeId }).populate("user", "name").populate("perfume", "name image");
-        return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment, review.recommended));
+        const reviews = await this.reviewModel
+            .find({ perfume: perfumeId })
+            .populate("user", "name image") 
+            .populate({
+                path: "perfume",
+                select: "_id name image", 
+                populate: {
+                    path: "brand",
+                    select: "name", 
+                },
+            });
+    
+        return reviews.map(review => {
+            const perfume = review.perfume;
+            const user = review.user;
+            return new ReviewEntity(
+                user,
+                perfume, 
+                review.rating,
+                review.comment,
+                review.recommended
+            );
+        });
     }
-
+    
+    
+    
     async getReviewsByUser(userId: string): Promise<ReviewEntity[]> {
         const reviews = await this.reviewModel.find({ user: userId }).populate("perfume", "name image").populate("perfume", "name image");
         return reviews.map(review => new ReviewEntity(review.user, review.perfume, review.rating, review.comment, review.recommended));
